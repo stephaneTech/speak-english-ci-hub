@@ -14,16 +14,158 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          nom: string
+          pays: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          nom: string
+          pays: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          nom?: string
+          pays?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      translation_orders: {
+        Row: {
+          client_id: string
+          created_at: string
+          delai_heures: number
+          document_type_autre: string | null
+          document_types: string[]
+          fichier_traduit: string | null
+          fichiers_originaux: string[] | null
+          id: string
+          langue_cible: string
+          langue_source: string
+          nombre_pages: number
+          notes: string | null
+          prix: number
+          statut: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          delai_heures: number
+          document_type_autre?: string | null
+          document_types: string[]
+          fichier_traduit?: string | null
+          fichiers_originaux?: string[] | null
+          id?: string
+          langue_cible: string
+          langue_source: string
+          nombre_pages: number
+          notes?: string | null
+          prix: number
+          statut?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          delai_heures?: number
+          document_type_autre?: string | null
+          document_types?: string[]
+          fichier_traduit?: string | null
+          fichiers_originaux?: string[] | null
+          id?: string
+          langue_cible?: string
+          langue_source?: string
+          nombre_pages?: number
+          notes?: string | null
+          prix?: number
+          statut?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "translation_orders_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +292,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
