@@ -13,9 +13,7 @@ const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const openWhatsApp = () => {
-  window.open('https://api.whatsapp.com/send?phone=2250797721270', '_self');
-};
+const WHATSAPP_URL = "https://wa.me/2250797721270";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -63,12 +61,12 @@ const Footer = () => {
               >
                 <TikTokIcon className="w-5 h-5" />
               </a>
-              <button 
-                onClick={openWhatsApp}
+              <a 
+                href={WHATSAPP_URL}
                 className="w-10 h-10 rounded-full bg-muted/20 flex items-center justify-center hover:bg-secondary transition-colors duration-300"
               >
                 <MessageCircle className="w-5 h-5" />
-              </button>
+              </a>
             </div>
           </div>
 
