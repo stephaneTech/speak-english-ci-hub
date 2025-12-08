@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { FileText, Upload, Calculator, Clock, CheckCircle, ArrowRight, X, ArrowLeft, Copy } from "lucide-react";
+import { FileText, Upload, Calculator, Clock, CheckCircle, ArrowRight, X, ArrowLeft, Copy, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -1016,14 +1016,26 @@ const Traduction = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-3 text-sm text-muted-foreground mb-8">
+                  <div className="space-y-3 text-sm text-muted-foreground mb-6">
                     <p>📧 Vous recevrez un email de confirmation</p>
                     <p>📱 Nous vous contacterons via WhatsApp</p>
                   </div>
 
-                  <Button onClick={resetForm} variant="outline" size="lg">
-                    Nouvelle commande
-                  </Button>
+                  <div className="space-y-3">
+                    <a 
+                      href={`https://api.whatsapp.com/send?phone=2250797721270&text=${encodeURIComponent(`Bonjour, j'ai effectué un paiement de ${totalPrice.toLocaleString()} FCFA via ${paymentData.method === 'wave' ? 'Wave' : paymentData.method === 'orange_money' ? 'Orange Money' : 'MTN Money'}. Référence: ${paymentData.reference}. En attente de confirmation.`)}`}
+                      className="block"
+                    >
+                      <Button type="button" className="w-full bg-green-600 hover:bg-green-700">
+                        <MessageCircle className="w-5 h-5 mr-2" />
+                        Confirmer mon paiement via WhatsApp
+                      </Button>
+                    </a>
+
+                    <Button onClick={resetForm} variant="outline" size="lg" className="w-full">
+                      Nouvelle commande
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
