@@ -75,6 +75,116 @@ const questions = [
     options: ["stay", "stayed", "will stay", "would stay"],
     correct: 2,
   },
+  {
+    id: 11,
+    question: "What is the past participle of 'write'?",
+    sentence: "",
+    options: ["Wrote", "Written", "Writing", "Writed"],
+    correct: 1,
+  },
+  {
+    id: 12,
+    question: "Choose the correct word:",
+    sentence: "She speaks English ___.",
+    options: ["good", "well", "goodly", "better"],
+    correct: 1,
+  },
+  {
+    id: 13,
+    question: "Complete the sentence:",
+    sentence: "I have been waiting ___ two hours.",
+    options: ["since", "for", "during", "while"],
+    correct: 1,
+  },
+  {
+    id: 14,
+    question: "What is the opposite of 'expensive'?",
+    sentence: "",
+    options: ["Rich", "Cheap", "Poor", "Free"],
+    correct: 1,
+  },
+  {
+    id: 15,
+    question: "Choose the correct form:",
+    sentence: "He suggested ___ a movie.",
+    options: ["to watch", "watching", "watch", "watched"],
+    correct: 1,
+  },
+  {
+    id: 16,
+    question: "What does 'nevertheless' mean?",
+    sentence: "",
+    options: ["Therefore", "However", "Because", "Although"],
+    correct: 1,
+  },
+  {
+    id: 17,
+    question: "Choose the correct sentence:",
+    sentence: "",
+    options: [
+      "She don't like coffee.",
+      "She doesn't likes coffee.",
+      "She doesn't like coffee.",
+      "She not like coffee."
+    ],
+    correct: 2,
+  },
+  {
+    id: 18,
+    question: "Complete with the correct pronoun:",
+    sentence: "This book is ___. I bought it yesterday.",
+    options: ["my", "me", "mine", "I"],
+    correct: 2,
+  },
+  {
+    id: 19,
+    question: "What is a synonym of 'begin'?",
+    sentence: "",
+    options: ["End", "Start", "Stop", "Finish"],
+    correct: 1,
+  },
+  {
+    id: 20,
+    question: "Choose the correct comparative:",
+    sentence: "This car is ___ than that one.",
+    options: ["more fast", "faster", "most fast", "fastest"],
+    correct: 1,
+  },
+  {
+    id: 21,
+    question: "Complete the sentence:",
+    sentence: "I wish I ___ speak French fluently.",
+    options: ["can", "could", "will", "would"],
+    correct: 1,
+  },
+  {
+    id: 22,
+    question: "What does 'approximately' mean?",
+    sentence: "",
+    options: ["Exactly", "About", "Never", "Always"],
+    correct: 1,
+  },
+  {
+    id: 23,
+    question: "Choose the correct passive form:",
+    sentence: "The cake ___ by my mother.",
+    options: ["baked", "was baked", "is baking", "bakes"],
+    correct: 1,
+  },
+  {
+    id: 24,
+    question: "Complete with the correct modal:",
+    sentence: "You ___ wear a seatbelt in the car.",
+    options: ["must", "can", "might", "could"],
+    correct: 0,
+  },
+  {
+    id: 25,
+    question: "What is the meaning of 'to accomplish'?",
+    sentence: "",
+    options: ["To fail", "To achieve", "To forget", "To ignore"],
+    correct: 1,
+  },
 ];
 
 const getLevel = (score: number) => {
@@ -149,7 +259,7 @@ const TestNiveau = () => {
               <span className="text-gradient"> d'anglais</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              Testez gratuitement votre niveau d'anglais avec notre quiz de 10 questions. 
+              Testez gratuitement votre niveau d'anglais avec notre quiz de {questions.length} questions. 
               Recevez votre résultat immédiatement !
             </p>
           </div>
@@ -195,19 +305,21 @@ const TestNiveau = () => {
                 {/* Answer Review */}
                 <div className="space-y-4 mb-8">
                   <h3 className="font-heading font-semibold text-lg">Détail des réponses</h3>
-                  {questions.map((q, index) => (
-                    <div key={q.id} className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
-                      {answers[index] === q.correct ? (
-                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                      ) : (
-                        <XCircle className="w-5 h-5 text-destructive flex-shrink-0" />
-                      )}
-                      <span className="text-sm flex-1">Question {index + 1}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {q.options[q.correct]}
-                      </span>
-                    </div>
-                  ))}
+                  <div className="max-h-64 overflow-y-auto space-y-2">
+                    {questions.map((q, index) => (
+                      <div key={q.id} className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
+                        {answers[index] === q.correct ? (
+                          <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-destructive flex-shrink-0" />
+                        )}
+                        <span className="text-sm flex-1">Question {index + 1}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {q.options[q.correct]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4">
