@@ -43,17 +43,16 @@ const Header = () => {
       <nav className="container py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
             <img 
               src={logo} 
               alt="Speak English CI" 
-              className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+              className="h-10 sm:h-12 w-auto transition-transform duration-300 group-hover:scale-105"
             />
-            <div className="hidden sm:block">
-              <span className="text-xl font-heading font-bold text-foreground">
-                SPEAK <span className="text-gradient">ENGLISH</span>
+            <div className="hidden xs:block">
+              <span className="text-base sm:text-xl font-heading font-bold text-foreground">
+                SPEAK <span className="text-gradient">ENGLISH</span> CI
               </span>
-              <span className="block text-xs text-muted-foreground tracking-wider">CÔTE D'IVOIRE</span>
             </div>
           </Link>
 
@@ -98,15 +97,17 @@ const Header = () => {
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="lg:hidden mt-4 pb-4 border-t border-border pt-4 animate-fade-in">
-            <div className="flex flex-col gap-2">
+        <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          isMenuOpen ? "max-h-[500px] opacity-100 mt-4" : "max-h-0 opacity-0"
+        }`}>
+          <div className="pb-4 border-t border-border pt-4">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                  className={`px-4 py-3 rounded-lg font-medium text-base transition-all duration-300 ${
                     isActive(link.href)
                       ? "bg-primary/10 text-primary"
                       : "text-foreground/70 hover:text-foreground hover:bg-muted"
@@ -115,14 +116,14 @@ const Header = () => {
                   {link.label}
                 </Link>
               ))}
-              <Link to="/traduction" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="turquoise" className="w-full mt-4">
+              <Link to="/traduction" onClick={() => setIsMenuOpen(false)} className="mt-3">
+                <Button variant="turquoise" className="w-full">
                   Commander une traduction
                 </Button>
               </Link>
             </div>
           </div>
-        )}
+        </div>
       </nav>
     </header>
   );
