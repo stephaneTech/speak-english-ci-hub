@@ -321,8 +321,39 @@ const Traduction = () => {
 
       if (error) throw error;
 
+      // Send confirmation email
+      const sourceLabel = sourceLanguages.find(l => l.value === formData.sourceLanguage)?.label || formData.sourceLanguage;
+      const targetLabel = targetLanguages.find(l => l.value === formData.targetLanguage)?.label || formData.targetLanguage;
+      
+      try {
+        const emailResponse = await supabase.functions.invoke('send-order-confirmation', {
+          body: {
+            orderId: orderId,
+            clientName: formData.name,
+            clientEmail: formData.email,
+            documentTypes: formData.selectedDocTypes.length > 0 ? formData.selectedDocTypes : [formData.otherDocType],
+            sourceLanguage: sourceLabel,
+            targetLanguage: targetLabel,
+            numberOfPages: formData.pages,
+            totalPrice: totalPrice,
+            deliveryTime: getDeliveryTime(formData.pages),
+            paymentMethod: paymentData.method,
+            paymentReference: paymentData.reference,
+          },
+        });
+        
+        if (emailResponse.error) {
+          console.error('Email sending error:', emailResponse.error);
+        } else {
+          console.log('Confirmation email sent successfully');
+        }
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
+        // Don't block the flow if email fails
+      }
+
       setStep('confirmation');
-      toast.success("Paiement enregistré !");
+      toast.success("Paiement enregistré ! Un email de confirmation vous a été envoyé.");
     } catch (error) {
       console.error('Payment error:', error);
       toast.error("Erreur lors de l'enregistrement du paiement");
