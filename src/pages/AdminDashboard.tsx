@@ -562,14 +562,23 @@ const AdminDashboard = () => {
                         </SelectContent>
                       </Select>
 
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {order.fichiers_originaux && order.fichiers_originaux.length > 0 && (
-                          <Button variant="outline" size="sm" asChild>
-                            <a href={order.fichiers_originaux[0]} target="_blank" rel="noopener noreferrer">
-                              <Download className="w-4 h-4 mr-1" />
-                              Originaux
-                            </a>
-                          </Button>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-muted-foreground mb-1">
+                              Fichiers originaux ({order.fichiers_originaux.length}):
+                            </span>
+                            <div className="flex flex-wrap gap-1">
+                              {order.fichiers_originaux.map((fichier, index) => (
+                                <Button key={index} variant="outline" size="sm" asChild>
+                                  <a href={fichier} target="_blank" rel="noopener noreferrer">
+                                    <Download className="w-4 h-4 mr-1" />
+                                    Doc {index + 1}
+                                  </a>
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
                         )}
                         
                         {order.fichier_traduit ? (
