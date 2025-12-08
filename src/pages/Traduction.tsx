@@ -55,14 +55,18 @@ const countries = [
 
 const PRICE_PER_PAGE = 9000;
 
-// Numéros de paiement - À modifier avec vos vrais numéros
+// Informations de paiement
 const PAYMENT_INFO = {
   wave: {
-    number: "+225 07 XX XX XX XX",
+    link: "https://pay.wave.com/m/M_THXHmBobFXOL/c/ci/",
     name: "SPEAK ENGLISH CI",
   },
   orangeMoney: {
-    number: "+225 07 XX XX XX XX", 
+    number: "+225 07 97 72 12 70",
+    name: "SPEAK ENGLISH CI",
+  },
+  moovMoney: {
+    number: "+225 01 03 02 64 67",
     name: "SPEAK ENGLISH CI",
   },
 };
@@ -95,7 +99,7 @@ const Traduction = () => {
   });
 
   const [paymentData, setPaymentData] = useState({
-    method: '' as 'wave' | 'orange_money' | '',
+    method: '' as 'wave' | 'orange_money' | 'moov_money' | '',
     reference: '',
   });
 
@@ -722,7 +726,7 @@ const Traduction = () => {
                     {/* Payment Method Selection */}
                     <div className="space-y-3">
                       <Label>Choisissez votre mode de paiement *</Label>
-                      <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="grid sm:grid-cols-3 gap-4">
                         {/* Wave */}
                         <div
                           onClick={() => setPaymentData(prev => ({ ...prev, method: 'wave' }))}
@@ -772,6 +776,31 @@ const Traduction = () => {
                             </div>
                           )}
                         </div>
+
+                        {/* Moov Money */}
+                        <div
+                          onClick={() => setPaymentData(prev => ({ ...prev, method: 'moov_money' }))}
+                          className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                            paymentData.method === 'moov_money' 
+                              ? 'border-primary bg-primary/5' 
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-12 h-12 rounded-xl bg-[#0066B3] flex items-center justify-center">
+                              <Smartphone className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                              <p className="font-heading font-bold">Moov Money</p>
+                              <p className="text-xs text-muted-foreground">Paiement rapide</p>
+                            </div>
+                          </div>
+                          {paymentData.method === 'moov_money' && (
+                            <div className="absolute top-2 right-2">
+                              <CheckCircle className="w-5 h-5 text-primary" />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -780,46 +809,108 @@ const Traduction = () => {
                       <div className="bg-muted/50 rounded-xl p-4 space-y-4">
                         <h4 className="font-heading font-semibold">Instructions de paiement</h4>
                         
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between p-3 bg-card rounded-lg">
-                            <div>
-                              <p className="text-xs text-muted-foreground">Numéro à envoyer</p>
-                              <p className="font-bold">
-                                {paymentData.method === 'wave' ? PAYMENT_INFO.wave.number : PAYMENT_INFO.orangeMoney.number}
-                              </p>
-                            </div>
-                            <Button 
-                              type="button" 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => copyToClipboard(paymentData.method === 'wave' ? PAYMENT_INFO.wave.number : PAYMENT_INFO.orangeMoney.number)}
+                        {/* Wave - Direct Payment Link */}
+                        {paymentData.method === 'wave' && (
+                          <div className="space-y-3">
+                            <p className="text-sm text-muted-foreground">
+                              Cliquez sur le bouton ci-dessous pour payer directement via Wave Business :
+                            </p>
+                            <a
+                              href={`${PAYMENT_INFO.wave.link}?amount=${totalPrice}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block"
                             >
-                              <Copy className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          
-                          <div className="p-3 bg-card rounded-lg">
-                            <p className="text-xs text-muted-foreground">Nom du bénéficiaire</p>
-                            <p className="font-bold">
-                              {paymentData.method === 'wave' ? PAYMENT_INFO.wave.name : PAYMENT_INFO.orangeMoney.name}
+                              <Button type="button" className="w-full bg-[#1DC3EB] hover:bg-[#1DC3EB]/90">
+                                <Smartphone className="w-5 h-5 mr-2" />
+                                Payer {totalPrice.toLocaleString()} FCFA via Wave
+                              </Button>
+                            </a>
+                            <p className="text-xs text-muted-foreground text-center">
+                              Après paiement, notez la référence de transaction et entrez-la ci-dessous.
                             </p>
                           </div>
+                        )}
 
-                          <div className="p-3 bg-card rounded-lg">
-                            <p className="text-xs text-muted-foreground">Montant exact</p>
-                            <p className="font-bold text-primary">{totalPrice.toLocaleString()} FCFA</p>
+                        {/* Orange Money - Manual */}
+                        {paymentData.method === 'orange_money' && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between p-3 bg-card rounded-lg">
+                              <div>
+                                <p className="text-xs text-muted-foreground">Numéro à envoyer</p>
+                                <p className="font-bold">{PAYMENT_INFO.orangeMoney.number}</p>
+                              </div>
+                              <Button 
+                                type="button" 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => copyToClipboard(PAYMENT_INFO.orangeMoney.number)}
+                              >
+                                <Copy className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            
+                            <div className="p-3 bg-card rounded-lg">
+                              <p className="text-xs text-muted-foreground">Nom du bénéficiaire</p>
+                              <p className="font-bold">{PAYMENT_INFO.orangeMoney.name}</p>
+                            </div>
+
+                            <div className="p-3 bg-card rounded-lg">
+                              <p className="text-xs text-muted-foreground">Montant exact</p>
+                              <p className="font-bold text-primary">{totalPrice.toLocaleString()} FCFA</p>
+                            </div>
+
+                            <div className="text-sm text-muted-foreground">
+                              <p className="font-medium mb-2">Étapes :</p>
+                              <ol className="list-decimal list-inside space-y-1">
+                                <li>Ouvrez votre application Orange Money</li>
+                                <li>Envoyez {totalPrice.toLocaleString()} FCFA au numéro ci-dessus</li>
+                                <li>Notez la référence de transaction</li>
+                                <li>Entrez la référence ci-dessous</li>
+                              </ol>
+                            </div>
                           </div>
-                        </div>
+                        )}
 
-                        <div className="text-sm text-muted-foreground">
-                          <p className="font-medium mb-2">Étapes :</p>
-                          <ol className="list-decimal list-inside space-y-1">
-                            <li>Ouvrez votre application {paymentData.method === 'wave' ? 'Wave' : 'Orange Money'}</li>
-                            <li>Envoyez {totalPrice.toLocaleString()} FCFA au numéro ci-dessus</li>
-                            <li>Notez la référence de transaction</li>
-                            <li>Entrez la référence ci-dessous</li>
-                          </ol>
-                        </div>
+                        {/* Moov Money - Manual */}
+                        {paymentData.method === 'moov_money' && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between p-3 bg-card rounded-lg">
+                              <div>
+                                <p className="text-xs text-muted-foreground">Numéro à envoyer</p>
+                                <p className="font-bold">{PAYMENT_INFO.moovMoney.number}</p>
+                              </div>
+                              <Button 
+                                type="button" 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => copyToClipboard(PAYMENT_INFO.moovMoney.number)}
+                              >
+                                <Copy className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            
+                            <div className="p-3 bg-card rounded-lg">
+                              <p className="text-xs text-muted-foreground">Nom du bénéficiaire</p>
+                              <p className="font-bold">{PAYMENT_INFO.moovMoney.name}</p>
+                            </div>
+
+                            <div className="p-3 bg-card rounded-lg">
+                              <p className="text-xs text-muted-foreground">Montant exact</p>
+                              <p className="font-bold text-primary">{totalPrice.toLocaleString()} FCFA</p>
+                            </div>
+
+                            <div className="text-sm text-muted-foreground">
+                              <p className="font-medium mb-2">Étapes :</p>
+                              <ol className="list-decimal list-inside space-y-1">
+                                <li>Ouvrez votre application Moov Money</li>
+                                <li>Envoyez {totalPrice.toLocaleString()} FCFA au numéro ci-dessus</li>
+                                <li>Notez la référence de transaction</li>
+                                <li>Entrez la référence ci-dessous</li>
+                              </ol>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -877,7 +968,9 @@ const Traduction = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Mode de paiement</span>
-                        <span className="font-semibold">{paymentData.method === 'wave' ? 'Wave' : 'Orange Money'}</span>
+                        <span className="font-semibold">
+                          {paymentData.method === 'wave' ? 'Wave' : paymentData.method === 'orange_money' ? 'Orange Money' : 'Moov Money'}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Délai de livraison</span>
