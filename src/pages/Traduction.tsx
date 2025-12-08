@@ -9,7 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
-import { WaveLogo, OrangeMoneyLogo, MoovMoneyLogo } from "@/components/icons/PaymentLogos";
+import waveLogo from "@/assets/wave-logo.png";
+import orangeMoneyLogo from "@/assets/orange-money-logo.png";
+import mtnMoneyLogo from "@/assets/mtn-money-logo.jpeg";
 
 const documentTypes = [
   "Acte de naissance",
@@ -25,6 +27,7 @@ const documentTypes = [
 ];
 
 const sourceLanguages = [
+  { value: "fr", label: "Français" },
   { value: "en", label: "Anglais" },
   { value: "de", label: "Allemand" },
   { value: "zh", label: "Mandarin" },
@@ -781,7 +784,7 @@ const Traduction = () => {
                         >
                           <div className="flex flex-col items-center gap-3">
                             <div className="w-full h-12 flex items-center justify-center">
-                              <WaveLogo className="h-10 w-auto" />
+                              <img src={waveLogo} alt="Wave" className="h-10 w-auto object-contain" />
                             </div>
                             <p className="text-xs text-muted-foreground text-center">Paiement instantané</p>
                           </div>
@@ -803,7 +806,7 @@ const Traduction = () => {
                         >
                           <div className="flex flex-col items-center gap-3">
                             <div className="w-full h-12 flex items-center justify-center">
-                              <OrangeMoneyLogo className="h-10 w-auto" />
+                              <img src={orangeMoneyLogo} alt="Orange Money" className="h-10 w-auto object-contain" />
                             </div>
                             <p className="text-xs text-muted-foreground text-center">Paiement sécurisé</p>
                           </div>
@@ -814,7 +817,7 @@ const Traduction = () => {
                           )}
                         </div>
 
-                        {/* Moov Money */}
+                        {/* MTN Money */}
                         <div
                           onClick={() => setPaymentData(prev => ({ ...prev, method: 'moov_money' }))}
                           className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all ${
@@ -825,7 +828,7 @@ const Traduction = () => {
                         >
                           <div className="flex flex-col items-center gap-3">
                             <div className="w-full h-12 flex items-center justify-center">
-                              <MoovMoneyLogo className="h-10 w-auto" />
+                              <img src={mtnMoneyLogo} alt="MTN Money" className="h-10 w-auto object-contain" />
                             </div>
                             <p className="text-xs text-muted-foreground text-center">Paiement rapide</p>
                           </div>
@@ -856,7 +859,7 @@ const Traduction = () => {
                               className="block"
                             >
                               <Button type="button" className="w-full bg-[#1DC3EB] hover:bg-[#1DC3EB]/90">
-                                <WaveLogo className="w-6 h-6 mr-2" />
+                                <img src={waveLogo} alt="Wave" className="w-6 h-6 mr-2 object-contain" />
                                 Payer {totalPrice.toLocaleString()} FCFA via Wave
                               </Button>
                             </a>
