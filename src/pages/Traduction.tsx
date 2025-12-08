@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 
 const documentTypes = [
   "Acte de naissance",
@@ -49,6 +51,15 @@ const countries = [
 
 const PRICE_PER_PAGE = 9000;
 
+const orderSchema = z.object({
+  name: z.string().trim().min(1, "Le nom est requis").max(100),
+  email: z.string().trim().email("Email invalide").max(255),
+  whatsapp: z.string().trim().min(8, "Numéro WhatsApp invalide").max(20),
+  country: z.string().min(1, "Le pays est requis"),
+  sourceLanguage: z.string().min(1, "La langue source est requise"),
+  targetLanguage: z.string().min(1, "La langue cible est requise"),
+});
+
 const Traduction = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -68,7 +79,6 @@ const Traduction = () => {
   const totalPrice = formData.pages * PRICE_PER_PAGE;
 
   const getDeliveryTime = (pages: number) => {
-    // 24h pour chaque tranche de 5 pages
     const tranches = Math.ceil(pages / 5);
     const hours = tranches * 24;
     const days = hours / 24;
@@ -77,6 +87,11 @@ const Traduction = () => {
       return `${hours}h (${days} jour${days > 1 ? 's' : ''})`;
     }
     return `${hours} heures`;
+  };
+
+  const getDeliveryHours = (pages: number) => {
+    const tranches = Math.ceil(pages / 5);
+    return tranches * 24;
   };
 
   const handleInputChange = (field: string, value: string | number) => {
@@ -108,7 +123,6 @@ const Traduction = () => {
         setFormData((prev) => ({ ...prev, files: [...prev.files, ...newFiles] }));
       }
     }
-    // Reset input to allow selecting same file again
     e.target.value = "";
   };
 
@@ -119,14 +133,57 @@ const Traduction = () => {
     }));
   };
 
+  const uploadFiles = async (files: File[]): Promise<string[]> => {
+    const uploadedUrls: string[] = [];
+    
+    for (const file of files) {
+      const fileName = `originals/${Date.now()}_${file.name}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, file);
+
+      if (uploadError) {
+        throw new Error(`Erreur lors de l'upload de ${file.name}`);
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('documents')
+        .getPublicUrl(fileName);
+
+      uploadedUrls.push(publicUrl);
+    }
+
+    return uploadedUrls;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const hasDocTypes = formData.selectedDocTypes.length > 0 || formData.otherDocType.trim() !== "";
     
-    if (!formData.name || !formData.email || !formData.whatsapp || !formData.country || 
-        !hasDocTypes || !formData.sourceLanguage || !formData.targetLanguage || formData.files.length === 0) {
-      toast.error("Veuillez remplir tous les champs obligatoires");
+    // Validate form
+    const validation = orderSchema.safeParse({
+      name: formData.name,
+      email: formData.email,
+      whatsapp: formData.whatsapp,
+      country: formData.country,
+      sourceLanguage: formData.sourceLanguage,
+      targetLanguage: formData.targetLanguage,
+    });
+
+    if (!validation.success) {
+      toast.error(validation.error.errors[0].message);
+      return;
+    }
+
+    if (!hasDocTypes) {
+      toast.error("Veuillez sélectionner au moins un type de document");
+      return;
+    }
+
+    if (formData.files.length === 0) {
+      toast.error("Veuillez uploader au moins un fichier PDF");
       return;
     }
 
@@ -136,26 +193,87 @@ const Traduction = () => {
     }
 
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    toast.success("Votre commande a été envoyée avec succès ! Nous vous contacterons bientôt.");
-    setIsSubmitting(false);
-    
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      whatsapp: "",
-      country: "",
-      selectedDocTypes: [],
-      otherDocType: "",
-      sourceLanguage: "",
-      targetLanguage: "",
-      pages: 1,
-      files: [],
-    });
+
+    try {
+      // 1. Upload files first
+      const uploadedUrls = await uploadFiles(formData.files);
+
+      // 2. Create or find client
+      const { data: existingClient } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('email', formData.email)
+        .maybeSingle();
+
+      let clientId: string;
+
+      if (existingClient) {
+        clientId = existingClient.id;
+        // Update client info
+        await supabase
+          .from('clients')
+          .update({
+            nom: formData.name,
+            whatsapp: formData.whatsapp,
+            pays: formData.country,
+          })
+          .eq('id', clientId);
+      } else {
+        // Create new client
+        const { data: newClient, error: clientError } = await supabase
+          .from('clients')
+          .insert({
+            nom: formData.name,
+            email: formData.email,
+            whatsapp: formData.whatsapp,
+            pays: formData.country,
+          })
+          .select('id')
+          .single();
+
+        if (clientError) throw clientError;
+        clientId = newClient.id;
+      }
+
+      // 3. Create order
+      const { error: orderError } = await supabase
+        .from('translation_orders')
+        .insert({
+          client_id: clientId,
+          document_types: formData.selectedDocTypes,
+          document_type_autre: formData.otherDocType || null,
+          langue_source: formData.sourceLanguage,
+          langue_cible: formData.targetLanguage,
+          nombre_pages: formData.pages,
+          prix: totalPrice,
+          delai_heures: getDeliveryHours(formData.pages),
+          fichiers_originaux: uploadedUrls,
+          statut: 'en_attente',
+        });
+
+      if (orderError) throw orderError;
+
+      toast.success("Votre commande a été envoyée avec succès ! Nous vous contacterons bientôt.");
+      
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        whatsapp: "",
+        country: "",
+        selectedDocTypes: [],
+        otherDocType: "",
+        sourceLanguage: "",
+        targetLanguage: "",
+        pages: 1,
+        files: [],
+      });
+    } catch (error) {
+      console.error('Order submission error:', error);
+      toast.error("Une erreur s'est produite. Veuillez réessayer.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
