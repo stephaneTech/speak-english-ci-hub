@@ -7,6 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
 
+const openWhatsApp = () => {
+  window.location.href = "https://wa.me/2250797721270";
+};
+
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -123,16 +127,13 @@ const Contact = () => {
                   <p className="text-primary-foreground/90 mb-4">
                     Pour une réponse plus rapide, contactez-nous directement sur WhatsApp.
                   </p>
-                  <a 
-                    href="https://wa.me/2250797721270" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <Button 
+                    className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                    onClick={openWhatsApp}
                   >
-                    <Button className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-                      <MessageCircle className="w-4 h-4" />
-                      Ouvrir WhatsApp
-                    </Button>
-                  </a>
+                    <MessageCircle className="w-4 h-4" />
+                    Ouvrir WhatsApp
+                  </Button>
                 </div>
               </div>
 
