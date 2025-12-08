@@ -87,8 +87,9 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+            className="lg:hidden p-3 rounded-xl hover:bg-muted active:bg-muted/80 transition-colors touch-manipulation"
             aria-label="Toggle menu"
+            type="button"
           >
             {isMenuOpen ? (
               <X className="w-6 h-6 text-foreground" />
@@ -100,26 +101,26 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isMenuOpen ? "max-h-[500px] opacity-100 mt-4" : "max-h-0 opacity-0"
+          isMenuOpen ? "max-h-[600px] opacity-100 mt-4" : "max-h-0 opacity-0"
         }`}>
           <div className="pb-4 border-t border-border pt-4">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`px-4 py-3 rounded-lg font-medium text-base transition-all duration-300 ${
+                  className={`px-4 py-4 rounded-xl font-medium text-base transition-all duration-300 touch-manipulation active:scale-[0.98] ${
                     isActive(link.href)
                       ? "bg-primary/10 text-primary"
-                      : "text-foreground/70 hover:text-foreground hover:bg-muted"
+                      : "text-foreground/70 hover:text-foreground hover:bg-muted active:bg-muted/80"
                   }`}
                 >
                   {link.label}
                 </Link>
               ))}
               <Link to="/traduction" onClick={() => setIsMenuOpen(false)} className="mt-3">
-                <Button variant="turquoise" className="w-full">
+                <Button variant="turquoise" className="w-full py-6 text-base touch-manipulation active:scale-[0.98]">
                   Commander une traduction
                 </Button>
               </Link>
