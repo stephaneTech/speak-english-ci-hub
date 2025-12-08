@@ -333,7 +333,7 @@ const AdminDashboard = () => {
 
       <div className="container px-4 sm:px-6 py-6 sm:py-8">
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -373,6 +373,65 @@ const AdminDashboard = () => {
             <p className="text-2xl sm:text-3xl font-heading font-bold">
               {orders.filter(o => o.statut === 'termine').length}
             </p>
+          </div>
+        </div>
+
+        {/* Payment Statistics */}
+        <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft mb-8">
+          <h3 className="font-heading font-bold text-lg mb-4 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-primary" />
+            Statistiques des paiements
+          </h3>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            {(() => {
+              const now = new Date();
+              const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+              const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+              const thisWeekStart = new Date(today.getTime() - today.getDay() * 24 * 60 * 60 * 1000);
+              const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+              
+              const confirmedOrders = orders.filter(o => o.paiement_confirme && o.date_paiement);
+              
+              const todayPayments = confirmedOrders.filter(o => {
+                const paymentDate = new Date(o.date_paiement!);
+                return paymentDate >= today;
+              });
+              
+              const yesterdayPayments = confirmedOrders.filter(o => {
+                const paymentDate = new Date(o.date_paiement!);
+                return paymentDate >= yesterday && paymentDate < today;
+              });
+              
+              const thisWeekPayments = confirmedOrders.filter(o => {
+                const paymentDate = new Date(o.date_paiement!);
+                return paymentDate >= thisWeekStart;
+              });
+              
+              const thisMonthPayments = confirmedOrders.filter(o => {
+                const paymentDate = new Date(o.date_paiement!);
+                return paymentDate >= thisMonthStart;
+              });
+              
+              const totalPayments = confirmedOrders;
+              
+              const calcTotal = (ordersList: Order[]) => ordersList.reduce((sum, o) => sum + o.prix, 0);
+              
+              const stats = [
+                { label: "Aujourd'hui", count: todayPayments.length, amount: calcTotal(todayPayments), color: 'bg-green-100 text-green-800' },
+                { label: 'Hier', count: yesterdayPayments.length, amount: calcTotal(yesterdayPayments), color: 'bg-blue-100 text-blue-800' },
+                { label: 'Cette semaine', count: thisWeekPayments.length, amount: calcTotal(thisWeekPayments), color: 'bg-purple-100 text-purple-800' },
+                { label: 'Ce mois', count: thisMonthPayments.length, amount: calcTotal(thisMonthPayments), color: 'bg-orange-100 text-orange-800' },
+                { label: 'Total', count: totalPayments.length, amount: calcTotal(totalPayments), color: 'bg-primary/10 text-primary' },
+              ];
+              
+              return stats.map((stat, index) => (
+                <div key={index} className={`p-3 sm:p-4 rounded-xl ${stat.color}`}>
+                  <p className="text-xs sm:text-sm font-medium mb-1">{stat.label}</p>
+                  <p className="text-lg sm:text-xl font-bold">{stat.count} paiement{stat.count > 1 ? 's' : ''}</p>
+                  <p className="text-xs sm:text-sm font-medium">{stat.amount.toLocaleString()} FCFA</p>
+                </div>
+              ));
+            })()}
           </div>
         </div>
 
