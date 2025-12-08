@@ -13,6 +13,10 @@ const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const openWhatsApp = () => {
+  window.location.href = "https://wa.me/2250797721270";
+};
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -59,14 +63,12 @@ const Footer = () => {
               >
                 <TikTokIcon className="w-5 h-5" />
               </a>
-              <a 
-                href="https://wa.me/2250797721270" 
-                target="_blank" 
-                rel="noopener noreferrer"
+              <button 
+                onClick={openWhatsApp}
                 className="w-10 h-10 rounded-full bg-muted/20 flex items-center justify-center hover:bg-secondary transition-colors duration-300"
               >
                 <MessageCircle className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
 
