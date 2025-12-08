@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import waveLogo from "@/assets/wave-logo.png";
 import orangeMoneyLogo from "@/assets/orange-money-logo.png";
-import mtnMoneyLogo from "@/assets/mtn-money-logo.jpeg";
+import moovMoneyLogo from "@/assets/moov-money-logo.png";
 
 const documentTypes = [
   "Acte de naissance",
@@ -828,7 +828,7 @@ const Traduction = () => {
                         >
                           <div className="flex flex-col items-center gap-3">
                             <div className="w-full h-12 flex items-center justify-center">
-                              <img src={mtnMoneyLogo} alt="MTN Money" className="h-10 w-auto object-contain" />
+                              <img src={moovMoneyLogo} alt="Moov Money" className="h-10 w-auto object-contain" />
                             </div>
                             <p className="text-xs text-muted-foreground text-center">Paiement rapide</p>
                           </div>
