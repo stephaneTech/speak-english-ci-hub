@@ -3,15 +3,12 @@ import Layout from "@/components/layout/Layout";
 import { Check, Star, Zap, Rocket, Clock, Users, Award, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const openWhatsApp = (message?: string) => {
+const getWhatsAppUrl = (message?: string) => {
   const phone = "2250797721270";
   const text = message ? encodeURIComponent(message) : "";
-  // Use api.whatsapp.com for better mobile compatibility
-  const whatsappUrl = text 
-    ? `https://api.whatsapp.com/send?phone=${phone}&text=${text}`
-    : `https://api.whatsapp.com/send?phone=${phone}`;
-  
-  window.open(whatsappUrl, '_self');
+  return text 
+    ? `https://wa.me/${phone}?text=${text}`
+    : `https://wa.me/${phone}`;
 };
 
 const packs = [
@@ -206,15 +203,19 @@ const Coaching = () => {
                   ))}
                 </ul>
 
-                <Button 
-                  variant={pack.color === "secondary" ? "turquoise" : "outline"}
-                  className="w-full"
-                  size="lg"
-                  onClick={() => openWhatsApp(`Bonjour, je suis intéressé(e) par le pack ${pack.name} à ${pack.price} FCFA/mois.`)}
+                <a 
+                  href={getWhatsAppUrl(`Bonjour, je suis intéressé(e) par le pack ${pack.name} à ${pack.price} FCFA/mois.`)}
+                  className="block"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  S'inscrire via WhatsApp
-                </Button>
+                  <Button 
+                    variant={pack.color === "secondary" ? "turquoise" : "outline"}
+                    className="w-full"
+                    size="lg"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    S'inscrire via WhatsApp
+                  </Button>
+                </a>
               </div>
             ))}
           </div>
@@ -231,14 +232,15 @@ const Coaching = () => {
             <p className="text-lg text-primary-foreground/90 mb-8">
               Contactez-nous sur WhatsApp pour plus d'informations ou pour vous inscrire.
             </p>
-            <Button 
-              size="lg" 
-              className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-              onClick={() => openWhatsApp("Bonjour, j'aimerais avoir plus d'informations sur vos formations.")}
-            >
-              <MessageCircle className="w-5 h-5" />
-              Nous contacter
-            </Button>
+            <a href={getWhatsAppUrl("Bonjour, j'aimerais avoir plus d'informations sur vos formations.")}>
+              <Button 
+                size="lg" 
+                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+              >
+                <MessageCircle className="w-5 h-5" />
+                Nous contacter
+              </Button>
+            </a>
           </div>
         </div>
       </section>
