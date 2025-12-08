@@ -20,6 +20,9 @@ import {
   Clock,
   XCircle,
   RefreshCw,
+  Smartphone,
+  CreditCard,
+  DollarSign,
 } from 'lucide-react';
 
 interface Client {
@@ -46,6 +49,10 @@ interface Order {
   fichier_traduit: string | null;
   notes: string | null;
   created_at: string;
+  methode_paiement: string | null;
+  reference_paiement: string | null;
+  paiement_confirme: boolean | null;
+  date_paiement: string | null;
   clients?: Client;
 }
 
@@ -158,6 +165,25 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleConfirmPayment = async (orderId: string) => {
+    try {
+      const { error } = await supabase
+        .from('translation_orders')
+        .update({ 
+          paiement_confirme: true,
+          date_paiement: new Date().toISOString(),
+        })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      setOrders(orders.map(o => o.id === orderId ? { ...o, paiement_confirme: true, date_paiement: new Date().toISOString() } : o));
+      toast.success('Paiement confirmé !');
+    } catch {
+      toast.error('Erreur lors de la confirmation');
+    }
+  };
+
   const handleSignOut = async () => {
     await signOut();
     navigate('/admin');
@@ -165,6 +191,12 @@ const AdminDashboard = () => {
 
   const getStatusInfo = (status: string) => {
     return statusOptions.find(s => s.value === status) || statusOptions[0];
+  };
+
+  const getPaymentMethodLabel = (method: string | null) => {
+    if (method === 'wave') return 'Wave';
+    if (method === 'orange_money') return 'Orange Money';
+    return 'Non spécifié';
   };
 
   const getDeliveryTime = (hours: number) => {
@@ -341,6 +373,43 @@ const AdminDashboard = () => {
                         <span className="text-muted-foreground">Délai: </span>
                         {getDeliveryTime(order.delai_heures)}
                       </div>
+                      
+                      {/* Payment Info */}
+                      {order.methode_paiement && (
+                        <div className="mt-3 p-3 bg-muted/50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            {order.methode_paiement === 'wave' ? (
+                              <Smartphone className="w-4 h-4 text-[#1DC3EB]" />
+                            ) : (
+                              <CreditCard className="w-4 h-4 text-[#FF6600]" />
+                            )}
+                            <span className="font-medium text-sm">{getPaymentMethodLabel(order.methode_paiement)}</span>
+                            {order.paiement_confirme ? (
+                              <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                                ✓ Confirmé
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">
+                                En attente
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Réf: <span className="font-mono">{order.reference_paiement}</span>
+                          </p>
+                          {!order.paiement_confirme && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="mt-2"
+                              onClick={() => handleConfirmPayment(order.id)}
+                            >
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Confirmer le paiement
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex flex-col gap-3">

@@ -72,6 +72,7 @@ export type Database = {
         Row: {
           client_id: string
           created_at: string
+          date_paiement: string | null
           delai_heures: number
           document_type_autre: string | null
           document_types: string[]
@@ -80,15 +81,19 @@ export type Database = {
           id: string
           langue_cible: string
           langue_source: string
+          methode_paiement: string | null
           nombre_pages: number
           notes: string | null
+          paiement_confirme: boolean | null
           prix: number
+          reference_paiement: string | null
           statut: string
           updated_at: string
         }
         Insert: {
           client_id: string
           created_at?: string
+          date_paiement?: string | null
           delai_heures: number
           document_type_autre?: string | null
           document_types: string[]
@@ -97,15 +102,19 @@ export type Database = {
           id?: string
           langue_cible: string
           langue_source: string
+          methode_paiement?: string | null
           nombre_pages: number
           notes?: string | null
+          paiement_confirme?: boolean | null
           prix: number
+          reference_paiement?: string | null
           statut?: string
           updated_at?: string
         }
         Update: {
           client_id?: string
           created_at?: string
+          date_paiement?: string | null
           delai_heures?: number
           document_type_autre?: string | null
           document_types?: string[]
@@ -114,9 +123,12 @@ export type Database = {
           id?: string
           langue_cible?: string
           langue_source?: string
+          methode_paiement?: string | null
           nombre_pages?: number
           notes?: string | null
+          paiement_confirme?: boolean | null
           prix?: number
+          reference_paiement?: string | null
           statut?: string
           updated_at?: string
         }
