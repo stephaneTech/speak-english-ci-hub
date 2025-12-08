@@ -170,6 +170,7 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
+    // Send confirmation email to client
     const emailResponse = await resend.emails.send({
       from: "SPEAK ENGLISH CI <onboarding@resend.dev>",
       to: [clientEmail],
@@ -177,7 +178,106 @@ const handler = async (req: Request): Promise<Response> => {
       html: emailHtml,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("Client email sent successfully:", emailResponse);
+
+    // Send notification email to admin
+    const adminEmail = "speakenglishciv@gmail.com";
+    const adminEmailHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+            .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+            .header { background: linear-gradient(135deg, #dc2626 0%, #f97316 100%); padding: 30px; text-align: center; }
+            .header h1 { color: white; margin: 0; font-size: 24px; }
+            .content { padding: 30px; }
+            .alert-badge { background-color: #f59e0b; color: white; padding: 12px 24px; border-radius: 30px; display: inline-block; font-weight: bold; margin-bottom: 20px; }
+            .order-details { background-color: #fef3c7; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin: 20px 0; }
+            .detail-row { padding: 8px 0; border-bottom: 1px solid #fde68a; }
+            .detail-row:last-child { border-bottom: none; }
+            .detail-label { color: #92400e; font-weight: 500; }
+            .detail-value { font-weight: 600; color: #1e293b; }
+            .action-btn { display: inline-block; background-color: #f97316; color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🔔 NOUVELLE COMMANDE - PAIEMENT EN ATTENTE</h1>
+            </div>
+            
+            <div class="content">
+              <div style="text-align: center;">
+                <span class="alert-badge">⏳ Paiement à confirmer</span>
+              </div>
+              
+              <p style="text-align: center; color: #64748b; font-size: 16px;">
+                Une nouvelle commande de traduction vient d'être passée et attend la confirmation de paiement.
+              </p>
+              
+              <div class="order-details">
+                <div class="detail-row">
+                  <span class="detail-label">👤 Client :</span>
+                  <span class="detail-value">${clientName}</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="detail-label">📧 Email :</span>
+                  <span class="detail-value">${clientEmail}</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="detail-label">📄 Documents :</span>
+                  <span class="detail-value">${documentTypes.join(", ")}</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="detail-label">🌍 Traduction :</span>
+                  <span class="detail-value">${sourceLanguage} → ${targetLanguage}</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="detail-label">📑 Pages :</span>
+                  <span class="detail-value">${numberOfPages} page(s)</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="detail-label">💳 Mode de paiement :</span>
+                  <span class="detail-value">${paymentMethodLabel}</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="detail-label">🔢 Référence :</span>
+                  <span class="detail-value">${paymentReference}</span>
+                </div>
+                
+                <div class="detail-row" style="background-color: #f97316; color: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                  <span class="detail-label" style="color: white; font-size: 18px;">💰 Montant :</span>
+                  <span class="detail-value" style="color: white; font-size: 20px;">${totalPrice.toLocaleString()} FCFA</span>
+                </div>
+              </div>
+              
+              <div style="text-align: center;">
+                <p style="color: #dc2626; font-weight: bold;">
+                  ⚠️ Action requise : Vérifiez le paiement et confirmez-le dans le tableau de bord admin.
+                </p>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const adminEmailResponse = await resend.emails.send({
+      from: "SPEAK ENGLISH CI <onboarding@resend.dev>",
+      to: [adminEmail],
+      subject: `🔔 Nouvelle commande #${orderId.slice(0, 8).toUpperCase()} - ${totalPrice.toLocaleString()} FCFA - Paiement en attente`,
+      html: adminEmailHtml,
+    });
+
+    console.log("Admin notification email sent successfully:", adminEmailResponse);
 
     return new Response(JSON.stringify({ success: true, emailResponse }), {
       status: 200,
