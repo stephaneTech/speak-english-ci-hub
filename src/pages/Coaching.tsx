@@ -3,6 +3,14 @@ import Layout from "@/components/layout/Layout";
 import { Check, Star, Zap, Rocket, Clock, Users, Award, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const openWhatsApp = (message?: string) => {
+  const phone = "2250797721270";
+  const url = message 
+    ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+    : `https://wa.me/${phone}`;
+  window.location.href = url;
+};
+
 const packs = [
   {
     name: "Starter",
@@ -195,16 +203,15 @@ const Coaching = () => {
                   ))}
                 </ul>
 
-                <a href="https://wa.me/2250797721270" target="_blank" rel="noopener noreferrer">
-                  <Button 
-                    variant={pack.color === "secondary" ? "turquoise" : "outline"}
-                    className="w-full"
-                    size="lg"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    S'inscrire via WhatsApp
-                  </Button>
-                </a>
+                <Button 
+                  variant={pack.color === "secondary" ? "turquoise" : "outline"}
+                  className="w-full"
+                  size="lg"
+                  onClick={() => openWhatsApp(`Bonjour, je suis intéressé(e) par le pack ${pack.name} à ${pack.price} FCFA/mois.`)}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  S'inscrire via WhatsApp
+                </Button>
               </div>
             ))}
           </div>
@@ -221,12 +228,14 @@ const Coaching = () => {
             <p className="text-lg text-primary-foreground/90 mb-8">
               Contactez-nous sur WhatsApp pour plus d'informations ou pour vous inscrire.
             </p>
-            <a href="https://wa.me/2250797721270" target="_blank" rel="noopener noreferrer">
-              <Button size="lg" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-                <MessageCircle className="w-5 h-5" />
-                Nous contacter
-              </Button>
-            </a>
+            <Button 
+              size="lg" 
+              className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+              onClick={() => openWhatsApp("Bonjour, j'aimerais avoir plus d'informations sur vos formations.")}
+            >
+              <MessageCircle className="w-5 h-5" />
+              Nous contacter
+            </Button>
           </div>
         </div>
       </section>
