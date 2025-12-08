@@ -43,14 +43,14 @@ const Header = () => {
       <nav className="container py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
             <img 
               src={logo} 
               alt="Speak English CI" 
-              className="h-14 sm:h-16 lg:h-20 w-auto transition-transform duration-300 group-hover:scale-105"
+              className="h-10 sm:h-14 lg:h-16 w-auto transition-transform duration-300 group-hover:scale-105"
             />
-            <div className="flex flex-col">
-              <span className="text-lg sm:text-xl lg:text-2xl font-heading font-bold">
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm sm:text-lg lg:text-xl font-heading font-bold whitespace-nowrap">
                 <span className="text-primary">SPEAK</span>{" "}
                 <span className="text-secondary">ENGLISH</span>{" "}
                 <span className="text-primary">CI</span>
