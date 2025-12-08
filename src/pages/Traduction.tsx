@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { FileText, Upload, Calculator, Clock, CheckCircle, ArrowRight, X, Smartphone, CreditCard, ArrowLeft, Copy } from "lucide-react";
+import { FileText, Upload, Calculator, Clock, CheckCircle, ArrowRight, X, ArrowLeft, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { WaveLogo, OrangeMoneyLogo, MoovMoneyLogo } from "@/components/icons/PaymentLogos";
 
 const documentTypes = [
   "Acte de naissance",
@@ -58,7 +59,7 @@ const PRICE_PER_PAGE = 9000;
 // Informations de paiement
 const PAYMENT_INFO = {
   wave: {
-    link: "https://pay.wave.com/m/M_THXHmBobFXOL/c/ci/",
+    link: "https://pay.wave.com/m/M_ci_fShORPhre-ds/c/ci/",
     name: "SPEAK ENGLISH CI",
   },
   orangeMoney: {
@@ -736,14 +737,11 @@ const Traduction = () => {
                               : 'border-border hover:border-primary/50'
                           }`}
                         >
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-12 h-12 rounded-xl bg-[#1DC3EB] flex items-center justify-center">
-                              <Smartphone className="w-6 h-6 text-white" />
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="w-full h-12 flex items-center justify-center">
+                              <WaveLogo className="h-10 w-auto" />
                             </div>
-                            <div>
-                              <p className="font-heading font-bold">Wave</p>
-                              <p className="text-xs text-muted-foreground">Paiement instantané</p>
-                            </div>
+                            <p className="text-xs text-muted-foreground text-center">Paiement instantané</p>
                           </div>
                           {paymentData.method === 'wave' && (
                             <div className="absolute top-2 right-2">
@@ -761,14 +759,11 @@ const Traduction = () => {
                               : 'border-border hover:border-primary/50'
                           }`}
                         >
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-12 h-12 rounded-xl bg-[#FF6600] flex items-center justify-center">
-                              <CreditCard className="w-6 h-6 text-white" />
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="w-full h-12 flex items-center justify-center">
+                              <OrangeMoneyLogo className="h-10 w-auto" />
                             </div>
-                            <div>
-                              <p className="font-heading font-bold">Orange Money</p>
-                              <p className="text-xs text-muted-foreground">Paiement sécurisé</p>
-                            </div>
+                            <p className="text-xs text-muted-foreground text-center">Paiement sécurisé</p>
                           </div>
                           {paymentData.method === 'orange_money' && (
                             <div className="absolute top-2 right-2">
@@ -786,14 +781,11 @@ const Traduction = () => {
                               : 'border-border hover:border-primary/50'
                           }`}
                         >
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-12 h-12 rounded-xl bg-[#0066B3] flex items-center justify-center">
-                              <Smartphone className="w-6 h-6 text-white" />
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="w-full h-12 flex items-center justify-center">
+                              <MoovMoneyLogo className="h-10 w-auto" />
                             </div>
-                            <div>
-                              <p className="font-heading font-bold">Moov Money</p>
-                              <p className="text-xs text-muted-foreground">Paiement rapide</p>
-                            </div>
+                            <p className="text-xs text-muted-foreground text-center">Paiement rapide</p>
                           </div>
                           {paymentData.method === 'moov_money' && (
                             <div className="absolute top-2 right-2">
@@ -822,7 +814,7 @@ const Traduction = () => {
                               className="block"
                             >
                               <Button type="button" className="w-full bg-[#1DC3EB] hover:bg-[#1DC3EB]/90">
-                                <Smartphone className="w-5 h-5 mr-2" />
+                                <WaveLogo className="w-6 h-6 mr-2" />
                                 Payer {totalPrice.toLocaleString()} FCFA via Wave
                               </Button>
                             </a>
