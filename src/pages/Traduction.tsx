@@ -1,10 +1,11 @@
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { FileText, Upload, Calculator, Clock, CheckCircle, ArrowRight } from "lucide-react";
+import { FileText, Upload, Calculator, Clock, CheckCircle, ArrowRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
 const documentTypes = [
@@ -18,10 +19,17 @@ const documentTypes = [
   "Contrat",
   "Passeport",
   "Permis de conduire",
-  "Autre",
 ];
 
-const languages = [
+const sourceLanguages = [
+  { value: "en", label: "Anglais" },
+  { value: "de", label: "Allemand" },
+  { value: "zh", label: "Mandarin" },
+  { value: "it", label: "Italien" },
+  { value: "es", label: "Espagnol" },
+];
+
+const targetLanguages = [
   { value: "fr", label: "Français" },
   { value: "en", label: "Anglais" },
 ];
@@ -47,11 +55,12 @@ const Traduction = () => {
     email: "",
     whatsapp: "",
     country: "",
-    documentType: "",
+    selectedDocTypes: [] as string[],
+    otherDocType: "",
     sourceLanguage: "",
     targetLanguage: "",
     pages: 1,
-    file: null as File | null,
+    files: [] as File[],
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,31 +68,59 @@ const Traduction = () => {
   const totalPrice = formData.pages * PRICE_PER_PAGE;
 
   const getDeliveryTime = (pages: number) => {
-    if (pages <= 5) return "24 heures";
-    if (pages <= 10) return "48 heures";
-    return "72 heures";
+    // 24h pour chaque tranche de 5 pages
+    const tranches = Math.ceil(pages / 5);
+    const hours = tranches * 24;
+    return `${hours} heures`;
   };
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleDocTypeChange = (docType: string, checked: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedDocTypes: checked
+        ? [...prev.selectedDocTypes, docType]
+        : prev.selectedDocTypes.filter((t) => t !== docType),
+    }));
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.type !== "application/pdf") {
-        toast.error("Veuillez sélectionner un fichier PDF");
-        return;
+    const files = e.target.files;
+    if (files) {
+      const newFiles: File[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.type !== "application/pdf") {
+          toast.error(`${file.name} n'est pas un fichier PDF`);
+          continue;
+        }
+        newFiles.push(file);
       }
-      setFormData((prev) => ({ ...prev, file }));
+      if (newFiles.length > 0) {
+        setFormData((prev) => ({ ...prev, files: [...prev.files, ...newFiles] }));
+      }
     }
+    // Reset input to allow selecting same file again
+    e.target.value = "";
+  };
+
+  const removeFile = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      files: prev.files.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const hasDocTypes = formData.selectedDocTypes.length > 0 || formData.otherDocType.trim() !== "";
+    
     if (!formData.name || !formData.email || !formData.whatsapp || !formData.country || 
-        !formData.documentType || !formData.sourceLanguage || !formData.targetLanguage || !formData.file) {
+        !hasDocTypes || !formData.sourceLanguage || !formData.targetLanguage || formData.files.length === 0) {
       toast.error("Veuillez remplir tous les champs obligatoires");
       return;
     }
@@ -107,11 +144,12 @@ const Traduction = () => {
       email: "",
       whatsapp: "",
       country: "",
-      documentType: "",
+      selectedDocTypes: [],
+      otherDocType: "",
       sourceLanguage: "",
       targetLanguage: "",
       pages: 1,
-      file: null,
+      files: [],
     });
   };
 
@@ -156,7 +194,7 @@ const Traduction = () => {
               <div className="w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4">
                 <Clock className="w-7 h-7 text-secondary" />
               </div>
-              <h3 className="font-heading font-bold text-2xl text-secondary mb-1">24h - 72h</h3>
+              <h3 className="font-heading font-bold text-2xl text-secondary mb-1">24h / 5 pages</h3>
               <p className="text-muted-foreground">délai de livraison</p>
             </div>
             <div className="bg-card rounded-2xl p-6 text-center shadow-soft">
@@ -246,23 +284,37 @@ const Traduction = () => {
                         Détails du document
                       </h3>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor="documentType">Type de document *</Label>
-                        <Select
-                          value={formData.documentType}
-                          onValueChange={(value) => handleInputChange("documentType", value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner le type de document" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {documentTypes.map((type) => (
-                              <SelectItem key={type} value={type}>
+                      {/* Document Types - Checkboxes */}
+                      <div className="space-y-3">
+                        <Label>Type(s) de document *</Label>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          {documentTypes.map((type) => (
+                            <div key={type} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={type}
+                                checked={formData.selectedDocTypes.includes(type)}
+                                onCheckedChange={(checked) => handleDocTypeChange(type, checked as boolean)}
+                              />
+                              <label
+                                htmlFor={type}
+                                className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
                                 {type}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {/* Autre option */}
+                        <div className="space-y-2 mt-4">
+                          <Label htmlFor="otherDocType">Autre (précisez)</Label>
+                          <Input
+                            id="otherDocType"
+                            placeholder="Autre type de document..."
+                            value={formData.otherDocType}
+                            onChange={(e) => handleInputChange("otherDocType", e.target.value)}
+                          />
+                        </div>
                       </div>
 
                       <div className="grid sm:grid-cols-2 gap-4">
@@ -276,7 +328,7 @@ const Traduction = () => {
                               <SelectValue placeholder="De..." />
                             </SelectTrigger>
                             <SelectContent>
-                              {languages.map((lang) => (
+                              {sourceLanguages.map((lang) => (
                                 <SelectItem key={lang.value} value={lang.value}>
                                   {lang.label}
                                 </SelectItem>
@@ -294,7 +346,7 @@ const Traduction = () => {
                               <SelectValue placeholder="Vers..." />
                             </SelectTrigger>
                             <SelectContent>
-                              {languages.map((lang) => (
+                              {targetLanguages.map((lang) => (
                                 <SelectItem key={lang.value} value={lang.value}>
                                   {lang.label}
                                 </SelectItem>
@@ -317,27 +369,46 @@ const Traduction = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="file">Document PDF *</Label>
+                        <Label htmlFor="file">Documents PDF * (plusieurs fichiers autorisés)</Label>
                         <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
                           <input
                             type="file"
                             id="file"
                             accept=".pdf"
+                            multiple
                             onChange={handleFileChange}
                             className="hidden"
                           />
                           <label htmlFor="file" className="cursor-pointer">
                             <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                            {formData.file ? (
-                              <p className="text-sm font-medium text-primary">{formData.file.name}</p>
-                            ) : (
-                              <>
-                                <p className="text-sm font-medium">Cliquez pour télécharger votre PDF</p>
-                                <p className="text-xs text-muted-foreground mt-1">Format PDF uniquement</p>
-                              </>
-                            )}
+                            <p className="text-sm font-medium">Cliquez pour télécharger vos PDF</p>
+                            <p className="text-xs text-muted-foreground mt-1">Format PDF uniquement - Plusieurs fichiers autorisés</p>
                           </label>
                         </div>
+                        
+                        {/* Liste des fichiers */}
+                        {formData.files.length > 0 && (
+                          <div className="mt-4 space-y-2">
+                            <Label>Fichiers sélectionnés ({formData.files.length})</Label>
+                            <div className="space-y-2">
+                              {formData.files.map((file, index) => (
+                                <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                                  <div className="flex items-center gap-2">
+                                    <FileText className="w-4 h-4 text-primary" />
+                                    <span className="text-sm font-medium truncate max-w-[200px]">{file.name}</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeFile(index)}
+                                    className="p-1 hover:bg-destructive/10 rounded-full transition-colors"
+                                  >
+                                    <X className="w-4 h-4 text-destructive" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -368,6 +439,10 @@ const Traduction = () => {
                     <div className="flex justify-between items-center py-3 border-b border-border">
                       <span className="text-muted-foreground">Prix par page</span>
                       <span className="font-semibold">9 000 FCFA</span>
+                    </div>
+                    <div className="flex justify-between items-center py-3 border-b border-border">
+                      <span className="text-muted-foreground">Fichiers PDF</span>
+                      <span className="font-semibold">{formData.files.length}</span>
                     </div>
                     <div className="flex justify-between items-center py-3 border-b border-border">
                       <span className="text-muted-foreground">Délai de livraison</span>
