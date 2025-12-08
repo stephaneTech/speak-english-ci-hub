@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 
 const openWhatsApp = (message?: string) => {
   const phone = "2250797721270";
-  const url = message 
-    ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
-    : `https://wa.me/${phone}`;
-  window.location.href = url;
+  const text = message ? encodeURIComponent(message) : "";
+  // Use api.whatsapp.com for better mobile compatibility
+  const whatsappUrl = text 
+    ? `https://api.whatsapp.com/send?phone=${phone}&text=${text}`
+    : `https://api.whatsapp.com/send?phone=${phone}`;
+  
+  window.open(whatsappUrl, '_self');
 };
 
 const packs = [

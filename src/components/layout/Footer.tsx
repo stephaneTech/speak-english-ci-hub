@@ -14,7 +14,7 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 );
 
 const openWhatsApp = () => {
-  window.location.href = "https://wa.me/2250797721270";
+  window.open('https://api.whatsapp.com/send?phone=2250797721270', '_self');
 };
 
 const Footer = () => {
