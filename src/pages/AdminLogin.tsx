@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Loader2, UserPlus } from 'lucide-react';
 import { z } from 'zod';
 
 const loginSchema = z.object({
@@ -15,9 +15,10 @@ const loginSchema = z.object({
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, isLoading, signIn } = useAuth();
+  const { user, isAdmin, isLoading, signIn, signUp } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -29,7 +30,6 @@ const AdminLogin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate input
     const result = loginSchema.safeParse({ email, password });
     if (!result.success) {
       const errors = result.error.errors;
@@ -40,16 +40,31 @@ const AdminLogin = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await signIn(email, password);
-      
-      if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          toast.error("Email ou mot de passe incorrect");
+      if (isSignUp) {
+        const { error } = await signUp(email, password);
+        
+        if (error) {
+          if (error.message.includes('already registered')) {
+            toast.error("Cet email est déjà utilisé");
+          } else {
+            toast.error("Erreur d'inscription: " + error.message);
+          }
         } else {
-          toast.error("Erreur de connexion: " + error.message);
+          toast.success("Compte créé ! Demandez à un administrateur de vous accorder les droits admin.");
+          setIsSignUp(false);
         }
       } else {
-        toast.success("Connexion réussie !");
+        const { error } = await signIn(email, password);
+        
+        if (error) {
+          if (error.message.includes('Invalid login credentials')) {
+            toast.error("Email ou mot de passe incorrect");
+          } else {
+            toast.error("Erreur de connexion: " + error.message);
+          }
+        } else {
+          toast.success("Connexion réussie !");
+        }
       }
     } catch {
       toast.error("Une erreur inattendue s'est produite");
@@ -77,10 +92,20 @@ const AdminLogin = () => {
         <div className="bg-card rounded-3xl p-8 shadow-elegant">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-primary-foreground" />
+              {isSignUp ? (
+                <UserPlus className="w-8 h-8 text-primary-foreground" />
+              ) : (
+                <Lock className="w-8 h-8 text-primary-foreground" />
+              )}
             </div>
-            <h1 className="text-2xl font-heading font-bold">Administration</h1>
-            <p className="text-muted-foreground mt-2">Connectez-vous pour accéder au tableau de bord</p>
+            <h1 className="text-2xl font-heading font-bold">
+              {isSignUp ? 'Créer un compte' : 'Administration'}
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              {isSignUp 
+                ? 'Inscrivez-vous pour demander un accès admin' 
+                : 'Connectez-vous pour accéder au tableau de bord'}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -112,27 +137,43 @@ const AdminLogin = () => {
                   className="pl-10"
                 />
               </div>
+              {isSignUp && (
+                <p className="text-xs text-muted-foreground">
+                  Minimum 6 caractères
+                </p>
+              )}
             </div>
 
             <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  Connexion...
+                  {isSignUp ? 'Inscription...' : 'Connexion...'}
                 </>
               ) : (
                 <>
-                  Se connecter
+                  {isSignUp ? "S'inscrire" : 'Se connecter'}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </>
               )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <a href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              ← Retour au site
-            </a>
+          <div className="mt-6 text-center space-y-3">
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-sm text-primary hover:underline"
+            >
+              {isSignUp 
+                ? 'Déjà un compte ? Se connecter' 
+                : "Pas de compte ? S'inscrire"}
+            </button>
+            <div>
+              <a href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                ← Retour au site
+              </a>
+            </div>
           </div>
         </div>
       </div>
