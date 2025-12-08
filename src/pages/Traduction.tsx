@@ -34,6 +34,10 @@ const sourceLanguages = [
 const targetLanguages = [
   { value: "fr", label: "Français" },
   { value: "en", label: "Anglais" },
+  { value: "de", label: "Allemand" },
+  { value: "zh", label: "Mandarin" },
+  { value: "it", label: "Italien" },
+  { value: "es", label: "Espagnol" },
 ];
 
 const countries = [
@@ -544,11 +548,13 @@ const Traduction = () => {
                                 <SelectValue placeholder="De..." />
                               </SelectTrigger>
                               <SelectContent>
-                                {sourceLanguages.map((lang) => (
-                                  <SelectItem key={lang.value} value={lang.value}>
-                                    {lang.label}
-                                  </SelectItem>
-                                ))}
+                                {sourceLanguages
+                                  .filter((lang) => lang.value !== formData.targetLanguage)
+                                  .map((lang) => (
+                                    <SelectItem key={lang.value} value={lang.value}>
+                                      {lang.label}
+                                    </SelectItem>
+                                  ))}
                               </SelectContent>
                             </Select>
                           </div>
@@ -562,11 +568,13 @@ const Traduction = () => {
                                 <SelectValue placeholder="Vers..." />
                               </SelectTrigger>
                               <SelectContent>
-                                {targetLanguages.map((lang) => (
-                                  <SelectItem key={lang.value} value={lang.value}>
-                                    {lang.label}
-                                  </SelectItem>
-                                ))}
+                                {targetLanguages
+                                  .filter((lang) => lang.value !== formData.sourceLanguage)
+                                  .map((lang) => (
+                                    <SelectItem key={lang.value} value={lang.value}>
+                                      {lang.label}
+                                    </SelectItem>
+                                  ))}
                               </SelectContent>
                             </Select>
                           </div>
