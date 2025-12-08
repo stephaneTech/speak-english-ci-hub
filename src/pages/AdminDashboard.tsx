@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   FileText,
   Users,
@@ -18,11 +25,11 @@ import {
   Download,
   CheckCircle,
   Clock,
-  XCircle,
   RefreshCw,
   Smartphone,
   CreditCard,
-  DollarSign,
+  Settings,
+  Lock,
 } from 'lucide-react';
 
 interface Client {
@@ -74,26 +81,29 @@ const languageLabels: Record<string, string> = {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, isLoading: authLoading, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<'orders' | 'clients'>('orders');
   const [orders, setOrders] = useState<Order[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
+  
+  // Password change dialog
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && (!user || !isAdmin)) {
+    // Check if authenticated
+    const isAdminAuth = sessionStorage.getItem('admin_authenticated');
+    if (isAdminAuth !== 'true') {
       navigate('/admin');
+      return;
     }
-  }, [user, isAdmin, authLoading, navigate]);
-
-  useEffect(() => {
-    if (user && isAdmin) {
-      fetchData();
-    }
-  }, [user, isAdmin]);
+    fetchData();
+  }, [navigate]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -184,9 +194,52 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut();
+  const handleSignOut = () => {
+    sessionStorage.removeItem('admin_authenticated');
     navigate('/admin');
+  };
+
+  const handleChangePassword = async () => {
+    if (!currentPassword.trim() || !newPassword.trim()) {
+      toast.error('Veuillez remplir tous les champs');
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      toast.error('Les mots de passe ne correspondent pas');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error('Le nouveau mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-auth', {
+        body: { action: 'change', password: currentPassword, newPassword }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.success) {
+        toast.success('Mot de passe modifié avec succès');
+        setShowPasswordDialog(false);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        toast.error(data.error || 'Erreur lors du changement de mot de passe');
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      toast.error('Erreur lors du changement de mot de passe');
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   const getStatusInfo = (status: string) => {
@@ -226,7 +279,7 @@ const AdminDashboard = () => {
     );
   });
 
-  if (authLoading || isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -248,10 +301,16 @@ const AdminDashboard = () => {
                 Admin
               </span>
             </div>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Déconnexion
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => setShowPasswordDialog(true)}>
+                <Settings className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Paramètres</span>
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                <LogOut className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Déconnexion</span>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -517,6 +576,68 @@ const AdminDashboard = () => {
           </div>
         )}
       </div>
+
+      {/* Password Change Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="w-5 h-5" />
+              Changer le mot de passe
+            </DialogTitle>
+            <DialogDescription>
+              Entrez votre mot de passe actuel puis le nouveau mot de passe.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="current-password">Mot de passe actuel</Label>
+              <Input
+                id="current-password"
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">Nouveau mot de passe</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirmer le nouveau mot de passe</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>
+              Annuler
+            </Button>
+            <Button onClick={handleChangePassword} disabled={isChangingPassword}>
+              {isChangingPassword ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Modification...
+                </>
+              ) : (
+                'Modifier'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
