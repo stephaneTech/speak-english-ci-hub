@@ -163,11 +163,22 @@ const Traduction = () => {
     }));
   };
 
+  const sanitizeFileName = (name: string): string => {
+    // Remove accents and special characters, replace spaces with underscores
+    return name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove accents
+      .replace(/[^a-zA-Z0-9._-]/g, '_') // Replace special chars with underscore
+      .replace(/_+/g, '_') // Remove consecutive underscores
+      .toLowerCase();
+  };
+
   const uploadFiles = async (files: File[]): Promise<string[]> => {
     const uploadedUrls: string[] = [];
     
     for (const file of files) {
-      const fileName = `originals/${Date.now()}_${file.name}`;
+      const sanitizedName = sanitizeFileName(file.name);
+      const fileName = `originals/${Date.now()}_${sanitizedName}`;
       
       const { error: uploadError } = await supabase.storage
         .from('documents')
