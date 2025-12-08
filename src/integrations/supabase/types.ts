@@ -65,6 +65,45 @@ export type Database = {
         }
         Relationships: []
       }
+      coaching_packs: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number | null
+          duration: string | null
+          features: string[]
+          id: string
+          is_popular: boolean | null
+          price: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          duration?: string | null
+          features?: string[]
+          id: string
+          is_popular?: boolean | null
+          price: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          duration?: string | null
+          features?: string[]
+          id?: string
+          is_popular?: boolean | null
+          price?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -85,6 +124,72 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          label: string | null
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id: string
+          label?: string | null
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          label?: string | null
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      test_questions: {
+        Row: {
+          category: string
+          correct_answer: number
+          created_at: string
+          difficulty: string
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          options: string[]
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          correct_answer: number
+          created_at?: string
+          difficulty?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          options: string[]
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          correct_answer?: number
+          created_at?: string
+          difficulty?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          options?: string[]
+          question?: string
           updated_at?: string
         }
         Relationships: []

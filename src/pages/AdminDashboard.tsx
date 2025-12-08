@@ -30,7 +30,13 @@ import {
   CreditCard,
   Settings,
   Lock,
+  Package,
+  HelpCircle,
+  Sliders,
 } from 'lucide-react';
+import PacksManager from '@/components/admin/PacksManager';
+import SiteSettingsManager from '@/components/admin/SiteSettingsManager';
+import QuestionsManager from '@/components/admin/QuestionsManager';
 
 interface Client {
   id: string;
@@ -79,9 +85,11 @@ const languageLabels: Record<string, string> = {
   fr: 'Français',
 };
 
+type TabType = 'orders' | 'clients' | 'packs' | 'questions' | 'settings';
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'orders' | 'clients'>('orders');
+  const [activeTab, setActiveTab] = useState<TabType>('orders');
   const [orders, setOrders] = useState<Order[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -287,6 +295,14 @@ const AdminDashboard = () => {
     );
   }
 
+  const tabs = [
+    { id: 'orders' as TabType, label: 'Commandes', icon: FileText },
+    { id: 'clients' as TabType, label: 'Clients', icon: Users },
+    { id: 'packs' as TabType, label: 'Packs', icon: Package },
+    { id: 'questions' as TabType, label: 'Test', icon: HelpCircle },
+    { id: 'settings' as TabType, label: 'Paramètres', icon: Sliders },
+  ];
+
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Header */}
@@ -303,8 +319,8 @@ const AdminDashboard = () => {
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => setShowPasswordDialog(true)}>
-                <Settings className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Paramètres</span>
+                <Lock className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Mot de passe</span>
               </Button>
               <Button variant="outline" size="sm" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4 sm:mr-2" />
@@ -361,36 +377,35 @@ const AdminDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6">
-          <Button
-            variant={activeTab === 'orders' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('orders')}
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            Commandes
-          </Button>
-          <Button
-            variant={activeTab === 'clients' ? 'turquoise' : 'outline'}
-            onClick={() => setActiveTab('clients')}
-          >
-            <Users className="w-4 h-4 mr-2" />
-            Clients
-          </Button>
+        <div className="flex flex-wrap gap-2 mb-6">
+          {tabs.map((tab) => (
+            <Button
+              key={tab.id}
+              variant={activeTab === tab.id ? 'default' : 'outline'}
+              onClick={() => setActiveTab(tab.id)}
+              className="flex items-center gap-2"
+            >
+              <tab.icon className="w-4 h-4" />
+              <span className="hidden sm:inline">{tab.label}</span>
+            </Button>
+          ))}
           <Button variant="outline" size="icon" onClick={fetchData}>
             <RefreshCw className="w-4 h-4" />
           </Button>
         </div>
 
-        {/* Search */}
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+        {/* Search (for orders and clients) */}
+        {(activeTab === 'orders' || activeTab === 'clients') && (
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        )}
 
         {/* Content */}
         {activeTab === 'orders' && (
@@ -575,6 +590,12 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'packs' && <PacksManager />}
+        
+        {activeTab === 'questions' && <QuestionsManager />}
+        
+        {activeTab === 'settings' && <SiteSettingsManager />}
       </div>
 
       {/* Password Change Dialog */}
