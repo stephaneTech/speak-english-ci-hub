@@ -19,17 +19,16 @@ const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
       {/* Main Footer */}
-      <div className="container py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="container py-10 md:py-16 px-4 sm:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {/* Brand */}
           <div className="space-y-6">
             <Link to="/" className="flex items-center gap-3">
               <img src={logo} alt="Speak English CI" className="h-14 w-auto" />
               <div>
                 <span className="text-xl font-heading font-bold">
-                  SPEAK <span className="text-primary">ENGLISH</span>
+                  SPEAK <span className="text-primary">ENGLISH</span> CI
                 </span>
-                <span className="block text-xs text-muted-foreground tracking-wider">CÔTE D'IVOIRE</span>
               </div>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -156,9 +155,9 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-muted/20">
-        <div className="container py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+        <div className="container py-4 md:py-6 px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 text-xs sm:text-sm text-muted-foreground">
           <p>© {currentYear} Speak English CI. Tous droits réservés.</p>
-          <p>Conçu avec ❤️ en Côte d'Ivoire</p>
+          <p>Conçu avec ❤️ en CI</p>
         </div>
       </div>
     </footer>

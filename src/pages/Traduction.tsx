@@ -71,6 +71,11 @@ const Traduction = () => {
     // 24h pour chaque tranche de 5 pages
     const tranches = Math.ceil(pages / 5);
     const hours = tranches * 24;
+    const days = hours / 24;
+    
+    if (days >= 1) {
+      return `${hours}h (${days} jour${days > 1 ? 's' : ''})`;
+    }
     return `${hours} heures`;
   };
 
@@ -156,22 +161,22 @@ const Traduction = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative py-16 lg:py-24 bg-hero-pattern overflow-hidden">
+      <section className="relative py-10 sm:py-16 lg:py-24 bg-hero-pattern overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-secondary/10 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute -top-40 -right-40 w-60 sm:w-80 h-60 sm:h-80 rounded-full bg-secondary/10 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-60 sm:w-80 h-60 sm:h-80 rounded-full bg-primary/10 blur-3xl" />
         </div>
 
-        <div className="container relative">
+        <div className="container relative px-4 sm:px-6">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="inline-block px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-6">
+            <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-secondary/10 text-secondary text-xs sm:text-sm font-medium mb-4 sm:mb-6">
               Traduction Certifiée
             </span>
-            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-6">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-heading font-bold mb-4 sm:mb-6">
               Traduction de documents
               <span className="text-gradient"> professionnelle</span>
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-sm sm:text-lg text-muted-foreground px-2">
               Obtenez une traduction certifiée de vos documents officiels. 
               Qualité garantie et livraison rapide.
             </p>
@@ -180,43 +185,42 @@ const Traduction = () => {
       </section>
 
       {/* Pricing Info */}
-      <section className="py-12 bg-muted/30">
-        <div className="container">
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="bg-card rounded-2xl p-6 text-center shadow-soft">
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Calculator className="w-7 h-7 text-primary" />
+      <section className="py-8 sm:py-12 bg-muted/30">
+        <div className="container px-4 sm:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
+            <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center shadow-soft">
+              <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Calculator className="w-5 sm:w-7 h-5 sm:h-7 text-primary" />
               </div>
-              <h3 className="font-heading font-bold text-2xl text-primary mb-1">9 000 FCFA</h3>
-              <p className="text-muted-foreground">par page</p>
+              <h3 className="font-heading font-bold text-lg sm:text-2xl text-primary mb-1">9 000 FCFA</h3>
+              <p className="text-xs sm:text-base text-muted-foreground">par page</p>
             </div>
-            <div className="bg-card rounded-2xl p-6 text-center shadow-soft">
-              <div className="w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-7 h-7 text-secondary" />
+            <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center shadow-soft">
+              <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Clock className="w-5 sm:w-7 h-5 sm:h-7 text-secondary" />
               </div>
-              <h3 className="font-heading font-bold text-2xl text-secondary mb-1">24h / 5 pages</h3>
-              <p className="text-muted-foreground">délai de livraison</p>
+              <h3 className="font-heading font-bold text-lg sm:text-2xl text-secondary mb-1">24h / 5 pages</h3>
+              <p className="text-xs sm:text-base text-muted-foreground">délai de livraison</p>
             </div>
-            <div className="bg-card rounded-2xl p-6 text-center shadow-soft">
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-7 h-7 text-primary" />
+            <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center shadow-soft">
+              <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <CheckCircle className="w-5 sm:w-7 h-5 sm:h-7 text-primary" />
               </div>
-              <h3 className="font-heading font-bold text-lg mb-1">Certification Officielle</h3>
-              <p className="text-muted-foreground">Document reconnu</p>
+              <h3 className="font-heading font-bold text-sm sm:text-lg mb-1">Certification Officielle</h3>
+              <p className="text-xs sm:text-base text-muted-foreground">Document reconnu</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Order Form */}
-      <section className="py-16 lg:py-24">
-        <div className="container">
+      <section className="py-10 sm:py-16 lg:py-24">
+        <div className="container px-4 sm:px-6">
           <div className="max-w-4xl mx-auto">
-            <div className="grid lg:grid-cols-5 gap-8">
+            <div className="grid lg:grid-cols-5 gap-6 lg:gap-8">
               {/* Form */}
-              <div className="lg:col-span-3">
-                <div className="bg-card rounded-3xl p-8 shadow-soft">
-                  <h2 className="text-2xl font-heading font-bold mb-8">Commander une traduction</h2>
+              <div className="lg:col-span-3 order-2 lg:order-1">
+                <div className="bg-card rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-soft">
+                  <h2 className="text-xl sm:text-2xl font-heading font-bold mb-6 sm:mb-8">Commander une traduction</h2>
                   
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Personal Info */}
@@ -427,49 +431,49 @@ const Traduction = () => {
               </div>
 
               {/* Summary */}
-              <div className="lg:col-span-2">
-                <div className="bg-card rounded-3xl p-6 shadow-soft sticky top-24">
-                  <h3 className="font-heading font-bold text-xl mb-6">Récapitulatif</h3>
+              <div className="lg:col-span-2 order-1 lg:order-2">
+                <div className="bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-soft lg:sticky lg:top-24">
+                  <h3 className="font-heading font-bold text-lg sm:text-xl mb-4 sm:mb-6">Récapitulatif</h3>
                   
-                  <div className="space-y-4 mb-6">
-                    <div className="flex justify-between items-center py-3 border-b border-border">
-                      <span className="text-muted-foreground">Nombre de pages</span>
-                      <span className="font-semibold">{formData.pages}</span>
+                  <div className="space-y-2 sm:space-y-4 mb-4 sm:mb-6">
+                    <div className="flex justify-between items-center py-2 sm:py-3 border-b border-border">
+                      <span className="text-xs sm:text-base text-muted-foreground">Nombre de pages</span>
+                      <span className="text-sm sm:text-base font-semibold">{formData.pages}</span>
                     </div>
-                    <div className="flex justify-between items-center py-3 border-b border-border">
-                      <span className="text-muted-foreground">Prix par page</span>
-                      <span className="font-semibold">9 000 FCFA</span>
+                    <div className="flex justify-between items-center py-2 sm:py-3 border-b border-border">
+                      <span className="text-xs sm:text-base text-muted-foreground">Prix par page</span>
+                      <span className="text-sm sm:text-base font-semibold">9 000 FCFA</span>
                     </div>
-                    <div className="flex justify-between items-center py-3 border-b border-border">
-                      <span className="text-muted-foreground">Fichiers PDF</span>
-                      <span className="font-semibold">{formData.files.length}</span>
+                    <div className="flex justify-between items-center py-2 sm:py-3 border-b border-border">
+                      <span className="text-xs sm:text-base text-muted-foreground">Fichiers PDF</span>
+                      <span className="text-sm sm:text-base font-semibold">{formData.files.length}</span>
                     </div>
-                    <div className="flex justify-between items-center py-3 border-b border-border">
-                      <span className="text-muted-foreground">Délai de livraison</span>
-                      <span className="font-semibold text-secondary">{getDeliveryTime(formData.pages)}</span>
+                    <div className="flex justify-between items-center py-2 sm:py-3 border-b border-border">
+                      <span className="text-xs sm:text-base text-muted-foreground">Délai de livraison</span>
+                      <span className="text-sm sm:text-base font-semibold text-secondary">{getDeliveryTime(formData.pages)}</span>
                     </div>
                   </div>
 
-                  <div className="bg-primary/5 rounded-2xl p-4 mb-6">
+                  <div className="bg-primary/5 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6">
                     <div className="flex justify-between items-center">
-                      <span className="font-heading font-bold text-lg">Total</span>
-                      <span className="font-heading font-bold text-2xl text-primary">
+                      <span className="font-heading font-bold text-sm sm:text-lg">Total</span>
+                      <span className="font-heading font-bold text-lg sm:text-2xl text-primary">
                         {totalPrice.toLocaleString()} FCFA
                       </span>
                     </div>
                   </div>
 
-                  <div className="space-y-3 text-sm">
+                  <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                     <div className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-primary mt-0.5" />
+                      <CheckCircle className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-primary mt-0.5 flex-shrink-0" />
                       <span>Traduction certifiée et officielle</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-secondary mt-0.5" />
+                      <CheckCircle className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-secondary mt-0.5 flex-shrink-0" />
                       <span>Livraison par email et WhatsApp</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-primary mt-0.5" />
+                      <CheckCircle className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-primary mt-0.5 flex-shrink-0" />
                       <span>Paiement sécurisé par Mobile Money</span>
                     </div>
                   </div>
