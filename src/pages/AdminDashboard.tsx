@@ -570,23 +570,32 @@ const AdminDashboard = () => {
                             </span>
                             <div className="flex flex-wrap gap-1">
                               {order.fichiers_originaux.map((fichier, index) => {
-                                // Ajouter ?download pour forcer le téléchargement sur mobile
                                 const downloadUrl = fichier.includes('?') 
                                   ? `${fichier}&download=true` 
                                   : `${fichier}?download=true`;
                                 return (
-                                  <Button 
-                                    key={index} 
-                                    variant="outline" 
-                                    size="sm" 
-                                    onClick={() => {
-                                      // Ouvrir dans un nouvel onglet avec téléchargement forcé
-                                      window.open(downloadUrl, '_blank', 'noopener,noreferrer');
-                                    }}
-                                  >
-                                    <Download className="w-4 h-4 mr-1" />
-                                    Doc {index + 1}
-                                  </Button>
+                                  <div key={index} className="flex gap-1">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      onClick={() => window.open(fichier, '_blank', 'noopener,noreferrer')}
+                                    >
+                                      <Eye className="w-4 h-4 mr-1" />
+                                      Voir {index + 1}
+                                    </Button>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => {
+                                        const link = document.createElement('a');
+                                        link.href = downloadUrl;
+                                        link.download = `document_${index + 1}.pdf`;
+                                        link.click();
+                                      }}
+                                    >
+                                      <Download className="w-4 h-4" />
+                                    </Button>
+                                  </div>
                                 );
                               })}
                             </div>
