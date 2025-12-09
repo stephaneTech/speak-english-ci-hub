@@ -78,7 +78,7 @@ const PAYMENT_INFO = {
   },
   moovMoney: {
     number: "+225 01 03 02 64 67",
-    name: "SPEAK ENGLISH CI",
+    name: "DIALLO AMINATOU",
   },
 };
 
