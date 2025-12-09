@@ -70,11 +70,11 @@ const getPricePerPage = (sourceLanguage: string, targetLanguage: string): number
 const PAYMENT_INFO = {
   wave: {
     link: "https://pay.wave.com/m/M_ci_fShORPhre-ds/c/ci/",
-    name: "SPEAK ENGLISH CI",
+    name: "DIALLO AMINATOU",
   },
   orangeMoney: {
     number: "+225 07 97 72 12 70",
-    name: "SPEAK ENGLISH CI",
+    name: "DIALLO AMINATOU",
   },
   moovMoney: {
     number: "+225 01 03 02 64 67",
