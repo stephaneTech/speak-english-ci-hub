@@ -57,7 +57,14 @@ const countries = [
   "Autre",
 ];
 
-const PRICE_PER_PAGE = 9000;
+const PRICE_FR_EN = 9000; // Français-Anglais / Anglais-Français
+const PRICE_OTHER = 14000; // Autres combinaisons de langues
+
+const getPricePerPage = (sourceLanguage: string, targetLanguage: string): number => {
+  const isFrEn = (sourceLanguage === 'fr' && targetLanguage === 'en') || 
+                 (sourceLanguage === 'en' && targetLanguage === 'fr');
+  return isFrEn ? PRICE_FR_EN : PRICE_OTHER;
+};
 
 // Informations de paiement
 const PAYMENT_INFO = {
@@ -109,7 +116,8 @@ const Traduction = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const totalPrice = formData.pages * PRICE_PER_PAGE;
+  const pricePerPage = getPricePerPage(formData.sourceLanguage, formData.targetLanguage);
+  const totalPrice = formData.pages * pricePerPage;
 
   const getDeliveryTime = (pages: number) => {
     const tranches = Math.ceil(pages / 5);
