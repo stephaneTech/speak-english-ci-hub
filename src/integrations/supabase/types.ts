@@ -268,6 +268,33 @@ export type Database = {
           },
         ]
       }
+      translation_pricing: {
+        Row: {
+          created_at: string
+          id: string
+          price_per_page: number
+          source_language: string
+          target_language: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price_per_page?: number
+          source_language: string
+          target_language: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price_per_page?: number
+          source_language?: string
+          target_language?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
