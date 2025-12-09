@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { FileText, Upload, Calculator, Clock, CheckCircle, ArrowRight, X, ArrowLeft, Copy, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -57,14 +57,21 @@ const countries = [
   "Autre",
 ];
 
-const PRICE_FR_EN = 9000; // Français-Anglais / Anglais-Français
-const PRICE_OTHER = 14000; // Autres combinaisons de langues
-
-const getPricePerPage = (sourceLanguage: string, targetLanguage: string): number => {
-  const isFrEn = (sourceLanguage === 'fr' && targetLanguage === 'en') || 
-                 (sourceLanguage === 'en' && targetLanguage === 'fr');
-  return isFrEn ? PRICE_FR_EN : PRICE_OTHER;
+// Map language codes to database language names
+const languageCodeToName: Record<string, string> = {
+  fr: "Français",
+  en: "Anglais",
+  de: "Allemand",
+  zh: "Mandarin",
+  it: "Italien",
+  es: "Espagnol",
 };
+
+interface TranslationPricing {
+  source_language: string;
+  target_language: string;
+  price_per_page: number;
+}
 
 // Informations de paiement
 const PAYMENT_INFO = {
@@ -96,6 +103,7 @@ type Step = 'form' | 'payment' | 'confirmation';
 const Traduction = () => {
   const [step, setStep] = useState<Step>('form');
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [pricingData, setPricingData] = useState<TranslationPricing[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -115,6 +123,34 @@ const Traduction = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch pricing data from database
+  useEffect(() => {
+    const fetchPricing = async () => {
+      const { data, error } = await supabase
+        .from('translation_pricing')
+        .select('source_language, target_language, price_per_page');
+      
+      if (!error && data) {
+        setPricingData(data);
+      }
+    };
+    fetchPricing();
+  }, []);
+
+  // Get price per page based on selected languages
+  const getPricePerPage = (sourceCode: string, targetCode: string): number => {
+    if (!sourceCode || !targetCode) return 9000; // Default price
+    
+    const sourceName = languageCodeToName[sourceCode];
+    const targetName = languageCodeToName[targetCode];
+    
+    const pricing = pricingData.find(
+      p => p.source_language === sourceName && p.target_language === targetName
+    );
+    
+    return pricing?.price_per_page || 9000; // Default fallback
+  };
 
   const pricePerPage = getPricePerPage(formData.sourceLanguage, formData.targetLanguage);
   const totalPrice = formData.pages * pricePerPage;

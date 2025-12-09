@@ -37,6 +37,7 @@ import {
 import PacksManager from '@/components/admin/PacksManager';
 import SiteSettingsManager from '@/components/admin/SiteSettingsManager';
 import QuestionsManager from '@/components/admin/QuestionsManager';
+import PricingManager from '@/components/admin/PricingManager';
 
 interface Client {
   id: string;
@@ -85,7 +86,7 @@ const languageLabels: Record<string, string> = {
   fr: 'Français',
 };
 
-type TabType = 'orders' | 'clients' | 'packs' | 'questions' | 'settings';
+type TabType = 'orders' | 'clients' | 'packs' | 'questions' | 'pricing' | 'settings';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -300,6 +301,7 @@ const AdminDashboard = () => {
     { id: 'clients' as TabType, label: 'Clients', icon: Users },
     { id: 'packs' as TabType, label: 'Packs', icon: Package },
     { id: 'questions' as TabType, label: 'Test', icon: HelpCircle },
+    { id: 'pricing' as TabType, label: 'Tarifs', icon: CreditCard },
     { id: 'settings' as TabType, label: 'Paramètres', icon: Sliders },
   ];
 
@@ -683,6 +685,8 @@ const AdminDashboard = () => {
         {activeTab === 'packs' && <PacksManager />}
         
         {activeTab === 'questions' && <QuestionsManager />}
+        
+        {activeTab === 'pricing' && <PricingManager />}
         
         {activeTab === 'settings' && <SiteSettingsManager />}
       </div>
